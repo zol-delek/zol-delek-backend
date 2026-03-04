@@ -1,15 +1,14 @@
-const express = require('express');
-const app = express();
-const { getFuelPrices } = require('../scraper');
-
-app.get('/api/prices', async (req, res) => {
-  try {
-    const prices = await getFuelPrices();
-    res.json(prices);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch prices" });
-  }
-});
-
-// השורה שחייבת להיות כאן כדי שלא תהיה שגיאה 500:
-module.exports = app;
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>זול דלק - מדיניות פרטיות</title>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+    <h1>זול דלק 🚗</h1>
+    <p>השרת פעיל!</p>
+    <h2>מדיניות פרטיות</h2>
+    <p>האפליקציה לא אוספת מידע אישי.</p>
+    <p>קשר: ilcapro@gmail.com</p>
+</body>
+</html>
