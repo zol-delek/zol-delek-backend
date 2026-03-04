@@ -1,15 +1,100 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>זול דלק - מדיניות פרטיות</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>זול דלק 🚗</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f0f2f5; min-height: 100vh; }
+    .header { background: #1a73e8; color: white; padding: 20px; text-align: center; }
+    .header h1 { font-size: 1.8em; }
+    .header p { opacity: 0.85; margin-top: 4px; }
+    .container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
+    .btn { background: #1a73e8; color: white; border: none; padding: 14px 28px;
+           border-radius: 8px; font-size: 1em; cursor: pointer; width: 100%; margin-bottom: 16px; }
+    .btn:active { background: #1558b0; }
+    .status { text-align: center; color: #666; margin-bottom: 16px; font-size: 0.9em; }
+    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .card-left .name { font-weight: bold; font-size: 1em; }
+    .card-left .address { color: #666; font-size: 0.85em; margin-top: 4px; }
+    .card-left .distance { color: #1a73e8; font-size: 0.85em; margin-top: 4px; }
+    .card-right { text-align: left; }
+    .price { font-size: 1.4em; font-weight: bold; color: #2e7d32; }
+    .price-label { font-size: 0.75em; color: #999; }
+    .brand-paz { border-right: 4px solid #f4c430; }
+    .brand-sonol { border-right: 4px solid #e53935; }
+    .brand-delek { border-right: 4px solid #1565c0; }
+    .brand-ten { border-right: 4px solid #2e7d32; }
+    .empty { text-align: center; padding: 40px; color: #999; }
+    .privacy { text-align: center; font-size: 0.8em; color: #aaa; margin-top: 30px; padding-bottom: 30px; }
+  </style>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+<body>
+  <div class="header">
     <h1>זול דלק 🚗</h1>
-    <p>השרת פעיל ומחובר בהצלחה.</p>
-    <hr>
-    <h3>מדיניות פרטיות</h3>
-    <p>האפליקציה אינה אוספת מידע אישי של משתמשים.</p>
-    <p>ליצירת קשר: ilcapro@gmail.com</p>
+    <p>תחנות הדלק הזולות הקרובות אליך</p>
+  </div>
+
+  <div class="container">
+    <button class="btn" onclick="findStations()">📍 מצא תחנות קרובות אליי</button>
+    <div class="status" id="status"></div>
+    <div id="results"></div>
+    <div class="privacy">
+      מדיניות פרטיות: האפליקציה אינה שומרת מידע אישי.<br>
+      קשר: ilcapro@gmail.com
+    </div>
+  </div>
+
+  <script>
+    function findStations() {
+      const status = document.getElementById('status');
+      const results = document.getElementById('results');
+      status.textContent = 'מאתר מיקום...';
+      results.innerHTML = '';
+
+      if (!navigator.geolocation) {
+        status.textContent = 'הדפדפן לא תומך ב-GPS';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          status.textContent = 'מחפש תחנות קרובות...';
+
+          try {
+            const res = await fetch(`/api/prices?lat=${latitude}&lng=${longitude}&radius=10`);
+            const data = await res.json();
+
+            if (!data.stations || data.stations.length === 0) {
+              results.innerHTML = '<div class="empty">לא נמצאו תחנות בטווח של 10 ק"מ</div>';
+              status.textContent = '';
+              return;
+            }
+
+            status.textContent = `נמצאו ${data.total} תחנות קרובות`;
+            results.innerHTML = data.stations.map(s => `
+              <div class="card brand-${s.brand}">
+                <div class="card-left">
+                  <div class="name">${s.name}</div>
+                  <div class="address">${s.address}</div>
+                  <div class="distance">📍 ${s.distance} ק"מ</div>
+                </div>
+                <div class="card-right">
+                  <div class="price">${s.prices ? s.prices.gasoline_95 + ' ₪' : 'N/A'}</div>
+                  <div class="price-label">בנזין 95</div>
+                </div>
+              </div>
+            `).join('');
+          } catch (e) {
+            status.textContent = 'שגיאה בטעינת הנתונים';
+          }
+        },
+        () => { status.textContent = 'לא ניתן לקבל מיקום. אפשר הרשאת GPS.'; }
+      );
+    }
+  </script>
 </body>
 </html>
