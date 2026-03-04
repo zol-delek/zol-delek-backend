@@ -7,7 +7,7 @@ app.get('/api/prices', async (req, res) => {
     const prices = await getFuelPrices();
     res.json(prices);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch prices" });
+    res.status(500).json({ error: "Server Error" });
   }
 });
 
