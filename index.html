@@ -1,26 +1,15 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>זול דלק - דף רשמי</title>
-    <style>
-        body { font-family: system-ui, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f9; color: #333; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 90%; }
-        h1 { color: #2c3e50; margin-bottom: 10px; }
-        .status { color: #27ae60; font-weight: bold; margin-bottom: 20px; }
-        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>זול דלק 🚗💨</h1>
-        <p class="status">השרת פעיל ומחובר בהצלחה!</p>
-        <hr>
-        <h2>מדיניות פרטיות (Privacy Policy)</h2>
-        <p>אפליקציית "זול דלק" אינה אוספת, שומרת או משתפת מידע אישי של משתמשים.</p>
-        <p>המידע באפליקציה מבוסס על נתונים ציבוריים בלבד.</p>
-        <p>ליצירת קשר: <strong>ilcapro@gmail.com</strong></p>
-    </div>
-</body>
-</html>
+const express = require('express');
+const app = express();
+const { getFuelPrices } = require('../scraper');
+
+app.get('/api/prices', async (req, res) => {
+  try {
+    const prices = await getFuelPrices();
+    res.json(prices);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch prices" });
+  }
+});
+
+// השורה שחייבת להיות כאן כדי שלא תהיה שגיאה 500:
+module.exports = app;
